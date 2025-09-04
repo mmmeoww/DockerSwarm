@@ -1,0 +1,155 @@
+version: '3.8'
+services:
+    postgres:
+        build: "./database"
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app-network
+    rabbit_mq:
+        build: "./rabbitmq"
+        ports:
+            - 5672:5672
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+        networks:
+            - app-network
+    session:
+        build: "./session-service"
+        ports:
+            - 8081:8081
+        environment:
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER : postgres
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: users_db
+        depends_on:
+            - postgres
+        networks:
+            - app-network
+    hotel:
+        build: "./hotel-service"
+        environment:
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER : postgres
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: hotels_db
+        depends_on:
+            - postgres
+        networks:
+            - app-network
+    payment:
+        build: "./payment-service"
+        environment:
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER : postgres
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: payments_db
+        depends_on:
+            - postgres
+        networks:
+            - app-network
+    loyalty:
+        build: "./loyalty-service"
+        environment:
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER : postgres
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: balances_db
+        depends_on:
+            - postgres
+        networks:
+            - app-network
+    report:
+        build: "./report-service"
+        environment:
+            POSTGRES_HOST: postgres 
+            POSTGRES_PORT: 5432
+            POSTGRES_USER : postgres
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: statistics_db
+            RABBIT_MQ_HOST: rabbit_mq
+            RABBIT_MQ_PORT: 5672
+            RABBIT_MQ_USER: guest
+            RABBIT_MQ_PASSWORD: guest
+            RABBIT_MQ_QUEUE_NAME: messagequeue
+            RABBIT_MQ_EXCHANGE: messagequeue-exchange
+        depends_on:
+            - postgres
+            - rabbit_mq
+        networks:
+            - app-network
+    booking:
+        build: "./booking-service"
+        environment:
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER : postgres
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: reservations_db
+            RABBIT_MQ_HOST: rabbit_mq
+            RABBIT_MQ_PORT: 5672
+            RABBIT_MQ_USER: guest
+            RABBIT_MQ_PASSWORD: guest
+            RABBIT_MQ_QUEUE_NAME: messagequeue
+            RABBIT_MQ_EXCHANGE: messagequeue-exchange
+            HOTEL_SERVICE_HOST: hotel
+            HOTEL_SERVICE_PORT: 8082
+            PAYMENT_SERVICE_HOST: payment
+            PAYMENT_SERVICE_PORT: 8084
+            LOYALTY_SERVICE_HOST: loyalty
+            LOYALTY_SERVICE_PORT: 8085
+        depends_on:
+            - postgres
+            - rabbit_mq
+            - hotel
+            - payment
+            - loyalty
+        networks:
+            - app-network
+    gateway:
+        build: "./gateway-service"
+        ports:
+            - 8087:8087
+        environment:
+            SESSION_SERVICE_HOST: session
+            SESSION_SERVICE_PORT: 8081
+            HOTEL_SERVICE_HOST: hotel
+            HOTEL_SERVICE_PORT: 8082
+            BOOKING_SERVICE_HOST: booking
+            BOOKING_SERVICE_PORT: 8083
+            PAYMENT_SERVICE_HOST: payment
+            PAYMENT_SERVICE_PORT: 8084
+            LOYALTY_SERVICE_HOST: loyalty
+            LOYALTY_SERVICE_PORT: 8085
+            REPORT_SERVICE_HOST: report
+            REPORT_SERVICE_PORT: 8086
+        depends_on:
+            - session
+            - hotel
+            - booking
+            - payment
+            - loyalty
+            - report
+        networks:
+            - app-network
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+
+networks:
+  app-network:
+    driver: bridge
