@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./services", "/vagrant"
 
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
+    echo "VM was started"
   SHELL
 
 end
