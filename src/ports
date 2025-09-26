@@ -1,9 +1,0 @@
-postgres - 5432
-rabbitmq - 5672 15672
-Session service - 8081
-Hotel service - 8082
-Booking service - 8083
-Payment service - 8084
-Loyalty service - 8085
-Report service - 8086
-Gateway service - 8087

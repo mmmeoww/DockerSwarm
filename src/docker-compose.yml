@@ -1,7 +1,7 @@
 version: '3.8'
 services:
     postgres:
-        build: "./database"
+        image: aggarego/services_postgres:1.0
         ports:
             - 5432:5432
         environment:
@@ -12,7 +12,7 @@ services:
         networks:
             - app-network
     rabbit_mq:
-        build: "./rabbitmq"
+        image: rabbitmq:3-management-alpine
         ports:
             - 5672:5672
         environment:
@@ -23,7 +23,7 @@ services:
         networks:
             - app-network
     session:
-        build: "./session-service"
+        image: aggarego/services_session:1.0
         ports:
             - 8081:8081
         environment:
@@ -37,7 +37,7 @@ services:
         networks:
             - app-network
     hotel:
-        build: "./hotel-service"
+        image: aggarego/services_hotel:1.0
         environment:
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
@@ -49,7 +49,7 @@ services:
         networks:
             - app-network
     payment:
-        build: "./payment-service"
+        image: aggarego/services_payment:1.0
         environment:
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
@@ -61,7 +61,7 @@ services:
         networks:
             - app-network
     loyalty:
-        build: "./loyalty-service"
+        image: aggarego/services_loyalty:1.0
         environment:
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
@@ -73,7 +73,7 @@ services:
         networks:
             - app-network
     report:
-        build: "./report-service"
+        image: aggarego/services_report:1.0
         environment:
             POSTGRES_HOST: postgres 
             POSTGRES_PORT: 5432
@@ -92,7 +92,7 @@ services:
         networks:
             - app-network
     booking:
-        build: "./booking-service"
+        image: aggarego/services_booking:1.0
         environment:
             POSTGRES_HOST: postgres
             POSTGRES_PORT: 5432
@@ -120,7 +120,7 @@ services:
         networks:
             - app-network
     gateway:
-        build: "./gateway-service"
+        image: aggarego/services_gateway:1.0
         ports:
             - 8087:8087
         environment:
@@ -152,4 +152,4 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge
+    driver: overlay
