@@ -314,7 +314,6 @@ services:
 volumes:
   postgres_data:
   rabbitmq_data:
-
 networks:
   app-network:
     driver: overlay
