@@ -3,8 +3,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
   config.vm.box_check_update = false
   config.vm.synced_folder "./services", "/home/vagrant/services"
-  config.vm.provision "shell", path: "./services/scripts/install-docker.sh"
-  config.vm.synced_folder ".", "/vagrant"
+  config.vm.provision "shell", path: "services/scripts/install-docker.sh"
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
     vb.memory = "2048"
@@ -14,6 +13,9 @@ Vagrant.configure("2") do |config|
   config.vm.define "manager01" do |manager|
     manager.vm.hostname = "manager01"
     manager.vm.network "private_network", ip: "192.168.56.2"
+    manager.vm.network "forwarded_port", guest: 8081, host: 8081
+    manager.vm.network "forwarded_port", guest: 8087, host: 8087
+    manager.vm.network "forwarded_port", guest: 9000, host: 9000
     manager.vm.provision "file",
       source: "./docker-compose.yml",
       destination: "/home/vagrant/docker-compose.yml"

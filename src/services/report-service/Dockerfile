@@ -22,4 +22,6 @@ RUN apk add --no-cache bash && \
     chmod +x wait-for-it.sh
 EXPOSE 8086
 
-ENTRYPOINT ["./wait-for-it.sh", "postgres:5432", "-t", "60", "--", "java", "-jar", "app.jar"]
+ENTRYPOINT ["./wait-for-it.sh", "postgres:5432", "-t", "60", "--", \
+            "./wait-for-it.sh", "rabbit_mq:5672", "-t", "30", "--", \
+            "java", "-jar", "app.jar"]

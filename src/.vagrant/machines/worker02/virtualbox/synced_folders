@@ -1,0 +1,1 @@
+{"virtualbox":{"/home/vagrant/services":{"guestpath":"/home/vagrant/services","hostpath":"/home/aggarego/s21/Orcestration/src/services","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/aggarego/s21/Orcestration/src","disabled":false,"__vagrantfile":true}}}
